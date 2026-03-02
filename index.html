@@ -3,620 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamesFan OS | Mark-42 Studio Hub</title>
+    <title>GamesFan Pro | Mark-42 Studio</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        /* --- CSS ПЕРЕМЕННЫЕ ДЛЯ ТЕМ --- */
         :root {
-            /* Светлая тема (Google Style) - По умолчанию */
-            --bg-app: #f8f9fa;
-            --bg-sidebar: #ffffff;
-            --bg-card: #ffffff;
-            --bg-input: #f1f3f4;
-            --text-main: #202124;
-            --text-dim: #5f6368;
-            --border: #dadce0;
-            --primary: #1a73e8; /* Google Blue */
-            --primary-hover: #1765cc;
-            --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
-            --danger: #d93025;
-            --admin: #f9ab00;
+            --primary: #1a73e8;
+            --bg: #f0f2f5;
+            --sidebar: #ffffff;
+            --card: #ffffff;
+            --text: #1c1e21;
+            --text-dim: #65676b;
+            --border: #dddfe2;
+            --glass: rgba(255, 255, 255, 0.8);
+            --radius: 16px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         [data-theme="dark"] {
-            /* Темная тема (ELBERR Style) */
-            --bg-app: #0a0b0d;
-            --bg-sidebar: #111417;
-            --bg-card: #1c2127;
-            --bg-input: #000000;
-            --text-main: #ffffff;
-            --text-dim: #9ea4a9;
-            --border: #333333;
-            --primary: #00adff; /* Mark-42 Blue */
-            --primary-hover: #008ecc;
-            --shadow: 0 4px 15px rgba(0,0,0,0.5);
+            --primary: #00adff;
+            --bg: #0d1117;
+            --sidebar: #161b22;
+            --card: #21262d;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --border: #30363d;
+            --glass: rgba(22, 27, 34, 0.8);
+            --shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
 
-        /* --- ОБЩИЕ СТИЛИ --- */
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Roboto', 'Segoe UI', sans-serif; background-color: var(--bg-app); color: var(--text-main); overflow: hidden; transition: background 0.3s, color 0.3s; }
-        
-        /* Кнопки и Инпуты */
-        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 14px; outline: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-        .btn-secondary { background-color: var(--bg-input); color: var(--text-main); border: 1px solid var(--border); }
-        .btn-secondary:hover { background-color: var(--border); }
-        .btn-danger { background-color: var(--danger); color: white; }
-        
-        input, textarea { width: 100%; padding: 12px 15px; margin: 8px 0; background-color: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); box-sizing: border-box; font-size: 14px; outline: none; transition: 0.2s; }
-        input:focus, textarea:focus { border-color: var(--primary); background-color: var(--bg-card); box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
-        textarea { resize: none; height: 80px; }
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* --- ЭКРАН АВТОРИЗАЦИИ --- */
-        #auth-screen { position: fixed; inset: 0; background-color: var(--bg-app); display: flex; justify-content: center; align-items: center; z-index: 1000; transition: 0.5s ease; }
-        .auth-card { background-color: var(--bg-sidebar); padding: 48px 40px; border-radius: 12px; width: 360px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .auth-card h1 { font-size: 24px; margin: 0 0 8px 0; color: var(--text-main); font-weight: 400; }
-        .auth-card p { color: var(--text-dim); margin-bottom: 24px; font-size: 16px; }
+        /* --- КРАСИВАЯ РЕГИСТРАЦИЯ (ROBLIKS STYLE) --- */
+        #auth-screen { position: fixed; inset: 0; background: linear-gradient(135deg, #1a73e8, #00adff); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .auth-card { background: var(--glass); backdrop-filter: blur(20px); padding: 40px; border-radius: 24px; width: 400px; box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.3); text-align: center; }
+        .auth-card h1 { font-size: 32px; margin: 0 0 10px; font-weight: 700; color: #1c1e21; }
+        .auth-card p { color: #444; margin-bottom: 25px; }
 
-        /* --- ОСНОВНОЙ ПРИЛОЖЕНИЕ --- */
+        input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 12px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 15px; outline: none; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2); }
+
+        .btn { padding: 14px 28px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; margin-top: 10px; }
+        .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        .btn-link { background: none; color: var(--text-dim); text-decoration: underline; margin-top: 15px; width: 100%; }
+
+        /* --- ОСНОВНОЙ ИНТЕРФЕЙС --- */
         #app { display: none; height: 100vh; grid-template-columns: 280px 1fr; }
-
-        /* Сайбар */
-        .sidebar { background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 24px 12px; box-sizing: border-box; }
-        .brand { font-size: 20px; color: var(--primary); font-weight: 500; margin-bottom: 32px; padding-left: 12px; }
+        .sidebar { background: var(--sidebar); border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; }
+        .logo { font-size: 24px; font-weight: 800; color: var(--primary); margin-bottom: 40px; }
         
-        .nav-link { padding: 12px; border-radius: 0 24px 24px 0; cursor: pointer; margin: 2px 0; color: var(--text-main); font-size: 14px; font-weight: 500; transition: 0.2s; display: flex; align-items: center; gap: 12px; margin-right: 12px; }
-        .nav-link:hover { background-color: rgba(60,64,67,0.04); }
-        [data-theme="dark"] .nav-link:hover { background-color: rgba(255,255,255,0.04); }
-        .nav-link.active { background-color: rgba(26,115,232,0.1); color: var(--primary); }
-        [data-theme="dark"] .nav-link.active { background-color: rgba(0,173,255,0.1); color: var(--primary); }
+        .nav-link { padding: 14px 18px; border-radius: 12px; cursor: pointer; margin: 4px 0; color: var(--text-dim); font-weight: 500; display: flex; align-items: center; gap: 12px; }
+        .nav-link:hover { background: var(--bg); color: var(--text); }
+        .nav-link.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3); }
 
-        /* Главная область */
-        .main-view { padding: 32px; overflow-y: auto; background-color: var(--bg-app); box-sizing: border-box; flex-grow: 1; position: relative; }
-        .main-view h1 { font-size: 28px; font-weight: 400; margin: 0 0 24px 0; color: var(--text-main); }
-        .section-title { font-size: 12px; text-transform: uppercase; color: var(--text-dim); letter-spacing: 1px; margin: 24px 0 12px 0; font-weight: 700; }
+        .main-content { padding: 40px; overflow-y: auto; background: var(--bg); }
+        .tab { display: none; }
+        .tab.active { display: block; animation: fadeIn 0.4s; }
 
-        /* Сетка игр */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
-        .game-card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; transition: 0.2s; cursor: pointer; display: flex; align-items: center; gap: 16px; box-sizing: border-box; }
-        .game-card:hover { border-color: rgba(32,33,36,0.1); box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15); }
-        [data-theme="dark"] .game-card:hover { border-color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .game-icon { font-size: 32px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Посты */
-        .post-card { background-color: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .post-avatar { width: 36px; height: 36px; background-color: var(--bg-input); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); border: 1px solid var(--border); }
-        .post-info { display: flex; flex-direction: column; }
-        .post-author { font-weight: 500; font-size: 14px; color: var(--text-main); }
-        .post-time { font-size: 12px; color: var(--text-dim); }
-        .post-body { font-size: 14px; line-height: 1.5; color: var(--text-main); }
+        /* --- КАРТОЧКИ ИГР --- */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .game-card { background: var(--card); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid var(--border); box-shadow: var(--shadow); cursor: pointer; transition: 0.3s; }
+        .game-card:hover { transform: translateY(-8px); border-color: var(--primary); }
+        .game-icon { font-size: 40px; margin-bottom: 15px; display: block; }
+        .game-title { font-weight: 700; font-size: 18px; }
 
-        /* Чаты */
-        .rooms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 24px; }
-        .room-card { background-color: var(--bg-card); border: 1px solid var(--border); padding: 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        
-        #active-chat-view { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; height: 500px; overflow: hidden; }
-        #chat-header { padding: 15px 20px; border-bottom: 1px solid var(--border); font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
-        #chat-window { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-color: var(--bg-app); }
-        #chat-window div { font-size: 14px; line-height: 1.4; max-width: 80%; padding: 8px 12px; border-radius: 8px; }
-        .msg-other { background-color: var(--bg-card); color: var(--text-main); align-self: flex-start; border: 1px solid var(--border); }
-        .msg-other b { color: var(--primary); font-size: 11px; display: block; margin-bottom: 2px; }
-        .msg-me { background-color: var(--primary); color: white; align-self: flex-end; }
-        #chat-input-area { padding: 15px; border-top: 1px solid var(--border); display: flex; gap: 10px; background-color: var(--bg-sidebar); }
+        /* --- ПОСТЫ И ПРОФИЛЬ --- */
+        .post { background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .post-author { font-weight: 700; color: var(--primary); margin-bottom: 8px; }
 
-        /* Игровой фрейм */
-        #game-frame-view { position: absolute; inset: 0; background-color: #000; display: none; flex-direction: column; }
-        #game-frame { flex-grow: 1; border: none; width: 100%; height: 100%; }
+        /* --- ИГРОВОЙ ЭКРАН --- */
+        #game-view { position: fixed; inset: 0; background: #000; z-index: 2000; display: none; flex-direction: column; }
+        .game-header { height: 60px; background: #1a1a1a; display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid #333; }
+        #game-frame { flex-grow: 1; border: none; }
 
-        /* Служебные */
         .hidden { display: none !important; }
-        .loader { font-size: 14px; color: var(--text-dim); text-align: center; padding: 20px; }
+        .admin-tag { background: #ffcc00; color: #000; padding: 2px 8px; border-radius: 6px; font-size: 12px; margin-left: 8px; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h1>GamesFan</h1>
-            <p>Марк-42 Студия Хаб</p>
-            
-            <div id="auth-inputs">
-                <input type="text" id="auth-nick" placeholder="Как тебя зовут? (Ник)">
-                <input type="email" id="auth-email" placeholder="Твой Email">
-                <input type="password" id="auth-pass" placeholder="Пароль">
-                
-                <button class="btn btn-primary" style="width:100%; margin-top:16px;" id="auth-main-btn" onclick="handleAuth()">Создать аккаунт</button>
-                <button class="btn btn-secondary" style="width:100%; margin-top:8px;" id="auth-toggle-btn" onclick="toggleAuthMode()">Уже есть аккаунт? Войти</button>
-            </div>
-            
-            <div id="auth-loading" class="hidden loader">Подожди секунду...</div>
+            <h1 id="auth-title">Присоединяйся</h1>
+            <p id="auth-desc">Mark-42 Studio: Твой игровой мир</p>
+            <input type="text" id="auth-nick" placeholder="Придумай крутой ник">
+            <input type="email" id="auth-email" placeholder="Твоя почта">
+            <input type="password" id="auth-pass" placeholder="Пароль">
+            <button class="btn btn-primary" onclick="handleAuth()">Начать игру</button>
+            <button class="btn btn-link" id="auth-toggle" onclick="toggleAuth()">Уже есть аккаунт? Войти</button>
         </div>
     </div>
 
     <div id="app">
         <aside class="sidebar">
-            <div class="brand">GamesFan OS</div>
-            
-            <div class="nav-link active" onclick="showTab('home', this)">🎮 Игры</div>
-            <div class="nav-link" onclick="showTab('social', this)">💬 Социалка</div>
-            <div class="nav-link" onclick="showTab('chats', this)">✉️ Чаты</div>
+            <div class="logo">GamesFan <span style="font-size: 10px; vertical-align: top;">PRO</span></div>
+            <div class="nav-link active" onclick="showTab('games', this)">🎮 Библиотека</div>
+            <div class="nav-link" onclick="showTab('social', this)">🌍 Сообщество</div>
+            <div class="nav-link" onclick="showTab('chats', this)">💬 Мессенджер</div>
             <div class="nav-link" onclick="showTab('settings', this)">⚙️ Настройки</div>
+            <div class="nav-link hidden" id="admin-btn" onclick="showTab('admin', this)" style="color:#ffcc00">⚡ Админка</div>
             
-            <div class="nav-link hidden" id="admin-link" onclick="showTab('admin', this)" style="color: var(--admin); margin-top: 16px; border: 1px solid var(--admin); border-radius: 8px; margin-left: 10px;">⚡ Админка</div>
-            
-            <div style="margin-top: auto; padding: 0 10px;">
-                <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px; text-align: center;">MARK-42 STUDIO © 2026</div>
-                <button class="btn btn-secondary" style="width:100%" onclick="signOut()">Выйти</button>
+            <div style="margin-top: auto;">
+                <button class="btn btn-link" onclick="firebase.auth().signOut()">Выход</button>
             </div>
         </aside>
 
-        <main class="main-view">
-            
-            <div id="tab-home">
-                <h1 id="welcome-msg">Загрузка...</h1>
-                
-                <div class="section-title">Серия ELBERR OS</div>
+        <main class="main-content">
+            <div id="tab-games" class="tab active">
+                <h1>Твоя библиотека</h1>
+                <div class="section-title" style="margin: 20px 0;">SLIME CLICKER 2D</div>
                 <div class="grid">
-                    <div class="game-card" onclick="launchGame('ELBERR_OS/Chapter1/index.html')"><div class="game-icon">💾</div>ELBERR CH 1</div>
-                    <div class="game-card" onclick="launchGame('ELBERR_OS/Chapter2/index.html')"><div class="game-icon">📂</div>ELBERR CH 2</div>
-                    <div class="game-card" onclick="launchGame('ELBERR_OS/Chapter3/index.html')"><div class="game-icon">🗄️</div>ELBERR CH 3</div>
+                    <div class="game-card" onclick="play('Slime Clicker/index.html')">
+                        <span class="game-icon">🟢</span>
+                        <div class="game-title">Slime Clicker 2D</div>
+                    </div>
                 </div>
 
-                <div class="section-title">Аркады</div>
+                <div class="section-title" style="margin: 30px 0;">АНТОЛОГИЯ ELBERR OS</div>
                 <div class="grid">
-                    <div class="game-card" onclick="launchGame('Slime Clicker/index.html')"><div class="game-icon">🟢</div>Slime Clicker</div>
-                    <div class="game-card" onclick="launchGame('Runner2D/index.html')"><div class="game-icon">🏃</div>Runner 2D</div>
-                    <div class="game-card" onclick="launchGame('Parkour/index.html')"><div class="game-icon">🪜</div>Parkour</div>
+                    <div class="game-card" onclick="play('ELBERR_OS/Chapter1/index.html')">
+                        <span class="game-icon">💾</span>
+                        <div class="game-title">ELBERR: CH 1</div>
+                    </div>
+                    <div class="game-card" onclick="play('ELBERR_OS/Chapter2/index.html')">
+                        <span class="game-icon">📂</span>
+                        <div class="game-title">ELBERR: CH 2</div>
+                    </div>
+                    <div class="game-card" onclick="play('ELBERR_OS/Chapter3/index.html')">
+                        <span class="game-icon">🗄️</span>
+                        <div class="game-title">ELBERR: CH 3</div>
+                    </div>
                 </div>
             </div>
 
-            <div id="tab-social" class="hidden">
+            <div id="tab-social" class="tab">
                 <h1>Лента Mark-42</h1>
-                
-                <div style="background-color: var(--bg-card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 24px; box-shadow: var(--shadow);">
-                    <textarea id="post-input" placeholder="О чем думаешь? Напиши пост для сообщества!"></textarea>
-                    <div style="display:flex; justify-content:flex-end; margin-top: 10px;">
-                        <button class="btn btn-primary" onclick="createPost()">Опубликовать</button>
-                    </div>
+                <div style="background:var(--card); padding:20px; border-radius:20px; margin-bottom:30px;">
+                    <textarea id="post-input" placeholder="О чем думаешь, Creater?" style="width:100%; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:15px; color:var(--text); resize:none; height:80px;"></textarea>
+                    <button class="btn btn-primary" style="width:auto; float:right; margin-top:10px;" onclick="addPost()">Опубликовать</button>
+                    <div style="clear:both;"></div>
                 </div>
-                
-                <div id="posts-feed"><div class="loader">Загрузка новостей...</div></div>
+                <div id="posts-list"></div>
             </div>
 
-            <div id="tab-chats" class="hidden">
-                <div id="rooms-list-view">
-                    <h1>Мессенджер</h1>
-                    <div style="display:flex; gap:10px; margin-bottom:24px;">
-                        <input type="text" id="new-room-name" placeholder="Название новой комнаты...">
-                        <button class="btn btn-primary" style="width:180px;" onclick="createRoom()">Создать комнату</button>
-                    </div>
-                    
-                    <h3>Доступные комнаты</h3>
-                    <div id="rooms-grid" class="rooms-grid"></div>
+            <div id="tab-chats" class="tab">
+                <h1>Мессенджер</h1>
+                <div style="display:flex; gap:10px; margin-bottom:20px;">
+                    <input type="text" id="room-name" placeholder="Название комнаты">
+                    <button class="btn btn-primary" style="width:200px;" onclick="createRoom()">Создать чат</button>
                 </div>
+                <div id="rooms-grid" class="grid"></div>
                 
-                <div id="active-chat-view" class="hidden">
-                    <div id="chat-header">
-                        <span id="current-room-name">Чат</span>
-                        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="closeChat()">Выйти из чата</button>
-                    </div>
-                    <div id="chat-window"></div>
-                    <div id="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="Напиши сообщение..." onkeydown="if(event.key==='Enter') sendMessage()">
-                        <button class="btn btn-primary" onclick="sendMessage()">Отправить</button>
+                <div id="chat-box" class="hidden" style="background:var(--card); height:500px; border-radius:20px; margin-top:20px; display:flex; flex-direction:column; overflow:hidden; border:1px solid var(--border);">
+                    <div id="chat-header" style="padding:15px; background:var(--primary); color:white; font-weight:700;">Чат</div>
+                    <div id="chat-msgs" style="flex-grow:1; padding:20px; overflow-y:auto;"></div>
+                    <div style="padding:15px; display:flex; gap:10px; background:var(--sidebar);">
+                        <input type="text" id="msg-input" placeholder="Твое сообщение..." onkeydown="if(event.key==='Enter') sendMsg()">
+                        <button class="btn btn-primary" style="width:80px;" onclick="sendMsg()">></button>
                     </div>
                 </div>
             </div>
 
-            <div id="tab-settings" class="hidden">
+            <div id="tab-settings" class="tab">
                 <h1>Настройки хаба</h1>
-                
-                <div style="background-color: var(--bg-card); padding: 24px; border-radius: 8px; border: 1px solid var(--border);">
-                    <h3>Визуальная тема</h3>
-                    <p style="color: var(--text-dim); margin-bottom: 16px;">Выбери оформление, которое тебе нравится.</p>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-secondary" id="theme-btn-light" onclick="setTheme('light')">☀️ Белая (Google)</button>
-                        <button class="btn btn-secondary" id="theme-btn-dark" onclick="setTheme('dark')">🌙 Темная (ELBERR)</button>
-                    </div>
+                <div class="post">
+                    <h3>Тема оформления</h3>
+                    <button class="btn btn-secondary" onclick="setTheme('light')">☀️ Светлая (Google)</button>
+                    <button class="btn btn-secondary" onclick="setTheme('dark')">🌙 Темная (ELBERR)</button>
+                </div>
+                <div class="post">
+                    <h3>Твой аккаунт</h3>
+                    <p>Никнейм: <b id="st-nick">...</b></p>
+                    <p>Email: <span id="st-email">...</span></p>
                 </div>
             </div>
 
-            <div id="tab-admin" class="hidden">
-                <h1 style="color: var(--admin)">Панель Создателя</h1>
-                
-                <div style="background-color: rgba(249,171,0,0.1); border: 1px solid var(--admin); padding: 24px; border-radius: 8px;">
-                    <h3>Управление контентом</h3>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
-                        <button class="btn btn-danger" onclick="adminDeleteAllPosts()">🗑 Удалить ВСЕ посты</button>
-                        <button class="btn btn-danger" onclick="adminDeleteAllChats()">🗑 Удалить ВСЕ чаты</button>
-                    </div>
-                    
-                    <hr style="border: 0; border-top: 1px solid var(--border);">
-                    
-                    <h3>Системное оповещение</h3>
-                    <input type="text" id="admin-broadcast-msg" placeholder="Текст сообщения от SYSTEM...">
-                    <button class="btn" style="background-color: var(--admin); color: black;" onclick="adminBroadcast()">📢 Отправить всем</button>
+            <div id="tab-admin" class="tab">
+                <h1 style="color:#ffcc00">Creater Panel</h1>
+                <div class="post">
+                    <button class="btn btn-primary" style="background:#ff4444" onclick="db.ref('posts').remove()">Очистить ленту новостей</button>
+                    <button class="btn btn-primary" style="background:#ff4444; margin-top:10px;" onclick="db.ref('chatRooms').remove()">Удалить все чаты</button>
                 </div>
             </div>
-
-            <div id="game-frame-view">
-                <div style="height: 40px; background:#111; display:flex; align-items:center; padding: 0 10px; border-bottom: 1px solid #333;">
-                    <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px; background:#222; border-color:#444; color:#ccc;" onclick="closeGame()">⬅ Назад в GamesFan</button>
-                </div>
-                <iframe id="game-frame" src=""></iframe>
-            </div>
-            
         </main>
     </div>
 
+    <div id="game-view">
+        <div class="game-header">
+            <button class="btn btn-secondary" style="padding:6px 15px; font-size:12px;" onclick="closePlay()">⬅ В хаб GamesFan</button>
+            <span style="color:white; margin-left:20px; font-weight:700;" id="active-game-name">Запуск...</span>
+        </div>
+        <iframe id="game-frame"></iframe>
+    </div>
+
     <script>
-        // --- КОНФИГУРАЦИЯ FIREBASE (Твои ключи, Лев!) ---
         const firebaseConfig = {
             apiKey: "AIzaSyDnniEB9asHQFUl0wwZvkxXpmDi9l_lYAI",
             authDomain: "gamesfan-17986.firebaseapp.com",
             projectId: "gamesfan-17986",
-            storageBucket: "gamesfan-17986.firebasestorage.app",
-            messagingSenderId: "311654524584",
-            appId: "1:311654524584:web:9283eea0aea6f7b946849d",
-            measurementId: "G-0SD750FNB6"
+            databaseURL: "https://gamesfan-17986-default-rtdb.firebaseio.com/",
+            appId: "1:311654524584:web:9283eea0aea6f7b946849d"
         };
-        
-        // Инициализация
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
 
-        // Глобальные переменные состояния
-        let isLoginMode = false;
+        let isLogin = false;
         let myNick = "Игрок";
-        let isAdmin = false;
-        let currentChatRoomId = null;
-        let currentChatRef = null;
+        let curRoom = null;
 
-        // --- ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ---
-        window.onload = () => {
-            // Загрузка темы из памяти
-            const savedTheme = localStorage.getItem('gamesfan-theme') || 'light';
-            setTheme(savedTheme);
-        };
-
-        // --- ЛОГИКА АВТОРИЗАЦИИ ---
-        
-        function toggleAuthMode() {
-            isLoginMode = !isLoginMode;
-            const h1 = document.querySelector('.auth-card h1');
-            const mainBtn = document.getElementById('auth-main-btn');
-            const toggleBtn = document.getElementById('auth-toggle-btn');
-            const nickInput = document.getElementById('auth-nick');
-            
-            if (isLoginMode) {
-                h1.innerText = "С возвращением";
-                mainBtn.innerText = "Войти в хаб";
-                toggleBtn.innerText = "Нет аккаунта? Зарегистрироваться";
-                nickInput.classList.add('hidden');
-            } else {
-                h1.innerText = "GamesFan";
-                mainBtn.innerText = "Создать аккаунт";
-                toggleBtn.innerText = "Уже есть аккаунт? Войти";
-                nickInput.classList.remove('hidden');
-            }
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "С возвращением" : "Присоединяйся";
+            document.getElementById('auth-nick').style.display = isLogin ? "none" : "block";
+            document.getElementById('auth-toggle').innerText = isLogin ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти";
         }
 
         async function handleAuth() {
-            const email = document.getElementById('auth-email').value.trim();
-            const pass = document.getElementById('auth-pass').value.trim();
-            const nick = document.getElementById('auth-nick').value.trim();
-            const inputsDiv = document.getElementById('auth-inputs');
-            const loadDiv = document.getElementById('auth-loading');
-
-            if (!email || !pass) return alert("Email и пароль обязательны!");
-            if (!isLoginMode && !nick) return alert("Введи свой ник для регистрации!");
-
-            inputsDiv.classList.add('hidden');
-            loadDiv.classList.remove('hidden');
-
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const nick = document.getElementById('auth-nick').value;
             try {
-                if (isLoginMode) {
-                    // ВХОД
-                    await auth.signInWithEmailAndPassword(email, pass);
-                } else {
-                    // РЕГИСТРАЦИЯ
+                if(isLogin) { await auth.signInWithEmailAndPassword(email, pass); }
+                else {
                     const r = await auth.createUserWithEmailAndPassword(email, pass);
-                    // Сохраняем ник в базу
-                    await db.ref('users/' + r.user.uid).set({
-                        nick: nick,
-                        email: email,
-                        joined: Date.now()
-                    });
+                    await db.ref('users/' + r.user.uid).set({ nick: nick, email: email });
                 }
-            } catch (e) {
-                alert("Ошибка: " + e.message);
-                inputsDiv.classList.remove('hidden');
-                loadDiv.classList.add('hidden');
-            }
-        }
-
-        function signOut() {
-            auth.signOut().then(() => location.reload());
-        }
-
-        // Отслеживание состояния входа
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('auth-screen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('auth-screen').classList.add('hidden');
-                    document.getElementById('app').style.display = 'grid';
-                }, 500);
-                
-                // Проверка на админа (Creater)
-                if (user.email === "vetrovlev1@gmail.com") {
-                    isAdmin = true;
-                    document.getElementById('admin-link').classList.remove('hidden');
-                }
-
-                // Загрузка данных профиля
-                db.ref('users/' + user.uid).on('value', s => {
-                    if (s.val()) {
-                        myNick = s.val().nick;
-                        document.getElementById('welcome-msg').innerText = "Рады видеть, " + myNick + "!";
-                        document.getElementById('p-nick').innerText = myNick;
-                        document.getElementById('post-input').placeholder = "О чем думаешь, " + myNick + "?";
-                    }
-                });
-
-                // Первичная загрузка контента
-                loadPosts();
-                loadChatRooms();
-
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('auth-screen').style.opacity = '1';
-                document.getElementById('app').style.display = 'none';
-            }
-        });
-
-        // --- НАВИГАЦИЯ ---
-        function showTab(tabId, el) {
-            // Скрываем все табы
-            document.querySelectorAll('.main-view > div').forEach(d => d.classList.add('hidden'));
-            document.getElementById('game-frame-view').style.display = 'none';
-            document.getElementById('game-frame').src = ""; // Остановить игру
-            
-            // Показываем нужный
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            
-            // Убираем активный класс у ссылок
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            if (el) el.classList.add('active');
-        }
-
-        // --- ЛОГИКА ИГР ---
-        function launchGame(path) {
-            // Скрыть контент, показать фрейм
-            document.querySelectorAll('.main-view > div').forEach(d => d.classList.add('hidden'));
-            document.getElementById('game-frame-view').style.display = 'flex';
-            document.getElementById('game-frame').src = path;
-        }
-
-        function closeGame() {
-            showTab('home', document.querySelector('.nav-link'));
-        }
-
-        // --- ЛОГИКА ПОСТОВ (СОЦИАЛКА) ---
-        
-        async function createPost() {
-            const input = document.getElementById('post-text');
-            const text = input.value.trim();
-            if (!text) return alert("Нельзя опубликовать пустой пост!");
-
-            const btn = event.target;
-            btn.disabled = true; btn.innerText = "...";
-
-            try {
-                await db.ref('posts').push({
-                    author: myNick,
-                    authorUid: auth.currentUser.uid,
-                    text: text,
-                    timestamp: Date.now()
-                });
-                input.value = "";
-            } catch (e) { alert(e.message); }
-            
-            btn.disabled = false; btn.innerText = "Опубликовать";
-        }
-
-        function loadPosts() {
-            const feed = document.getElementById('posts-feed');
-            
-            db.ref('posts').orderByChild('timestamp').on('value', s => {
-                feed.innerHTML = "";
-                if (!s.exists()) {
-                    feed.innerHTML = "<div class='loader'>Пока нет новостей. Будь первым!</div>";
-                    return;
-                }
-
-                let postsArray = [];
-                s.forEach(child => { postsArray.push(child.val()); });
-                postsArray.reverse(); // Новые сверху
-
-                postsArray.forEach(p => {
-                    const time = new Date(p.timestamp).toLocaleDateString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-                    const firstLetter = p.author.charAt(0).toUpperCase();
-                    feed.innerHTML += `
-                        <div class="post-card">
-                            <div class="post-header">
-                                <div class="post-avatar">${firstLetter}</div>
-                                <div class="post-info">
-                                    <span class="post-author">${p.author}</span>
-                                    <span class="post-time">${time}</span>
-                                </div>
-                            </div>
-                            <div class="post-body">${escapeHtml(p.text)}</div>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // --- ЛОГИКА ЧАТОВ (МЕССЕНДЖЕР) ---
-        
-        async function createRoom() {
-            const name = document.getElementById('new-room-name').value.trim();
-            if (!name) return alert("Введи название комнаты!");
-
-            try {
-                await db.ref('chatRooms').push({
-                    name: name,
-                    creator: myNick,
-                    creatorUid: auth.currentUser.uid,
-                    timestamp: Date.now()
-                });
-                document.getElementById('new-room-name').value = "";
             } catch(e) { alert(e.message); }
         }
 
-        function loadChatRooms() {
-            const grid = document.getElementById('rooms-grid');
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app').style.display = 'grid';
+                if(user.email === "vetrovlev1@gmail.com") document.getElementById('admin-btn').classList.remove('hidden');
+                db.ref('users/' + user.uid).on('value', s => {
+                    myNick = s.val().nick;
+                    document.getElementById('st-nick').innerText = myNick;
+                    document.getElementById('st-email').innerText = s.val().email;
+                });
+                loadPosts(); loadRooms();
+            } else { document.getElementById('auth-screen').style.display = 'flex'; document.getElementById('app').style.display = 'none'; }
+        });
+
+        function showTab(id, el) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function play(path) {
+            document.getElementById('game-view').style.display = 'flex';
+            document.getElementById('game-frame').src = path;
+        }
+        function closePlay() { document.getElementById('game-view').style.display = 'none'; document.getElementById('game-frame').src = ''; }
+
+        function setTheme(t) { 
+            document.documentElement.setAttribute('data-theme', t); 
+            localStorage.setItem('gf-theme', t);
+        }
+
+        // POSTS
+        function addPost() {
+            const t = document.getElementById('post-input').value;
+            if(!t) return;
+            db.ref('posts').push({ author: myNick, text: t, time: Date.now() });
+            document.getElementById('post-input').value = "";
+        }
+        function loadPosts() {
+            db.ref('posts').on('value', s => {
+                const list = document.getElementById('posts-list');
+                list.innerHTML = "";
+                s.forEach(p => {
+                    const d = p.val();
+                    list.innerHTML = `<div class="post"><div class="post-author">${d.author}</div><div>${d.text}</div></div>` + list.innerHTML;
+                });
+            });
+        }
+
+        // CHATS
+        function createRoom() {
+            const n = document.getElementById('room-name').value;
+            if(!n) return;
+            db.ref('chatRooms').push({ name: n, owner: myNick });
+            document.getElementById('room-name').value = "";
+        }
+        function loadRooms() {
             db.ref('chatRooms').on('value', s => {
-                grid.innerHTML = "";
-                if (!s.exists()) {
-                    grid.innerHTML = "<div class='loader'>Нет активных комнат. Создай свою!</div>";
-                    return;
-                }
-                s.forEach(child => {
-                    const r = child.val();
-                    grid.innerHTML += `
-                        <div class="room-card">
-                            <span><b>${escapeHtml(r.name)}</b><br><small style="color:var(--text-dim)">Создал: ${r.creator}</small></span>
-                            <button class="btn btn-primary" style="padding: 8px 16px;" onclick="openChatRoom('${child.key}', '${escapeHtml(r.name)}')">Войти</button>
-                        </div>
-                    `;
+                const g = document.getElementById('rooms-grid'); g.innerHTML = "";
+                s.forEach(r => {
+                    g.innerHTML += `<div class="game-card" style="padding:15px" onclick="openRoom('${r.key}', '${r.val().name}')"><b>${r.val().name}</b><br><small>Вход</small></div>`;
                 });
             });
         }
-
-        function openChatRoom(roomId, roomName) {
-            currentChatRoomId = roomId;
-            document.getElementById('rooms-list-view').classList.add('hidden');
-            document.getElementById('active-chat-view').classList.remove('hidden');
-            document.getElementById('current-room-name').innerText = "Комната: " + roomName;
-            
-            const win = document.getElementById('chat-window');
-            win.innerHTML = "<div class='loader'>Загрузка сообщений...</div>";
-
-            // Отписываемся от предыдущего чата, если он был
-            if (currentChatRef) currentChatRef.off();
-
-            currentChatRef = db.ref('messages/' + roomId);
-            currentChatRef.on('value', s => {
-                win.innerHTML = "";
-                if (!s.exists()) {
-                    win.innerHTML = "<div class='loader'>Здесь пока пусто. Напиши первое сообщение!</div>";
-                    return;
-                }
-                s.forEach(child => {
-                    const m = child.val();
-                    const cls = m.uid === auth.currentUser.uid ? 'msg-me' : 'msg-other';
-                    const author = m.uid === auth.currentUser.uid ? '' : `<b>${m.user}</b>`;
-                    win.innerHTML += `<div class="${cls}">${author}${escapeHtml(m.text)}</div>`;
-                });
-                win.scrollTop = win.scrollHeight; // Скролл вниз
-            });
-            document.getElementById('chat-input').focus();
-        }
-
-        function closeChat() {
-            document.getElementById('rooms-list-view').classList.remove('hidden');
-            document.getElementById('active-chat-view').classList.add('hidden');
-            if (currentChatRef) currentChatRef.off();
-            currentChatRoomId = null;
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text || !currentChatRoomId) return;
-
-            db.ref('messages/' + currentChatRoomId).push({
-                user: myNick,
-                uid: auth.currentUser.uid,
-                text: text,
-                timestamp: Date.now()
-            });
-            input.value = "";
-        }
-
-        // --- ЛОГИКА НАСТРОЕК (ТЕМЫ) ---
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('gamesfan-theme', theme);
-            
-            // Визуализация активной кнопки
-            if (theme === 'dark') {
-                document.getElementById('theme-btn-dark').style.borderColor = 'var(--primary)';
-                document.getElementById('theme-btn-light').style.borderColor = 'var(--border)';
-            } else {
-                document.getElementById('theme-btn-light').style.borderColor = 'var(--primary)';
-                document.getElementById('theme-btn-dark').style.borderColor = 'var(--border)';
-            }
-        }
-
-        // --- ЛОГИКА АДМИНКИ (Только vetrovlev1) ---
-        
-        function adminDeleteAllPosts() {
-            if (!isAdmin) return;
-            if (confirm("Creater Лев, ты уверен, что хочешь снести ВСЕ посты в ленте? Это навсегда.")) {
-                db.ref('posts').remove()
-                    .then(() => alert("Лента постов очищена."))
-                    .catch(e => alert(e.message));
-            }
-        }
-
-        function adminDeleteAllChats() {
-            if (!isAdmin) return;
-            if (confirm("Глава Mark-42, уничтожить ВСЕ комнаты и сообщения? Восстановить нельзя.")) {
-                db.ref('chatRooms').remove();
-                db.ref('messages').remove();
-                alert("Все чаты стерты из базы.");
-                closeChat();
-            }
-        }
-
-        function adminBroadcast() {
-            if (!isAdmin) return;
-            const msg = document.getElementById('admin-broadcast-msg').value.trim();
-            if (!msg) return alert("Введи текст оповещения!");
-
-            // Создаем админский пост
-            db.ref('posts').push({
-                author: "⚠️ SYSTEM (Creater)",
-                authorUid: "admin",
-                text: "ВАЖНОЕ СООБЩЕНИЕ: " + msg.toUpperCase(),
-                timestamp: Date.now()
-            }).then(() => {
-                alert("Объявление отправлено в ленту.");
-                document.getElementById('admin-broadcast-msg').value = "";
-                showTab('social', document.querySelectorAll('.nav-link')[1]); // Переход в ленту
+        function openRoom(id, name) {
+            curRoom = id;
+            document.getElementById('chat-box').classList.remove('hidden');
+            document.getElementById('chat-header').innerText = "Чат: " + name;
+            db.ref('msgs/' + id).off();
+            db.ref('msgs/' + id).on('child_added', s => {
+                const m = s.val();
+                document.getElementById('chat-msgs').innerHTML += `<div><b>${m.u}:</b> ${m.t}</div>`;
+                document.getElementById('chat-msgs').scrollTop = 9999;
             });
         }
-
-        // --- УТИЛИТЫ ---
-        // Защита от HTML-инъекций (чтобы в чате не ломали сайт кодом)
-        function escapeHtml(text) {
-            if (!text) return text;
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+        function sendMsg() {
+            const i = document.getElementById('msg-input');
+            if(!i.value || !curRoom) return;
+            db.ref('msgs/' + curRoom).push({ u: myNick, t: i.value });
+            i.value = "";
         }
+
+        // Init Theme
+        setTheme(localStorage.getItem('gf-theme') || 'light');
     </script>
 </body>
 </html>
